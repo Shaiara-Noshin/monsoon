@@ -8,7 +8,7 @@ def display():
     glVertex2f(30, 0)
     glVertex2f(0, 45)
     glEnd()
-    glSwapBuffers()
+    glutSwapBuffers()
 
 def animate():
     glutPostRedisplay()
