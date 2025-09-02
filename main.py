@@ -1,10 +1,12 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
+import random
 
 PALETTE = {
-    "tin" : (0.659, 0.635, 0.616),
-    "skyblue" : (0.725, 0.898, 0.91),
-    "brown" : (0.69, 0.533, 0.337)
+    "tin": (0.659, 0.635, 0.616),
+    "brown": (0.69, 0.533, 0.337),
+    "skyblue": (0.725, 0.898, 0.91),
+    "gloomblue": (0.259, 0.447, 0.522)
 }
 
 def getColor(k):
@@ -33,13 +35,55 @@ def drawHouse():
     glVertex2f(bx + bw/2, by - bh/2)
     glEnd()
 
+class Raindrop:
+    x_inc = 0
+    y_inc = 0.1
+    length = 20
+    drops = []
+
+    def __init__(self):
+        self.x, self.y =  random.randint(-200, 200), random.randint(-300, 300)
+        Raindrop.drops.append(self)
+    
+    def update(self):
+        self.x += self.x_inc
+        self.y -= self.y_inc
+        self.x = ((self.x + 200) % 400) - 200
+        self.y = ((self.y + 300) % 600) - 300
+
+    def draw(self):
+        offset = self.x_inc * 50
+        tx, ty = self.x - offset, self.y + self.length/2
+        bx, by = self.x + offset, self.y - self.length/2
+        glBegin(GL_LINES)
+        glColor3f(*getColor("gloomblue"))
+        glVertex2f(tx, ty)
+        glVertex2f(bx, by)
+        glEnd()
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
     drawHouse()
+    for drop in Raindrop.drops: drop.draw()
     glutSwapBuffers()
 
 def animate():
+    for drop in Raindrop.drops: drop.update()
     glutPostRedisplay()
+
+def keybinds(key, x, y):
+    if key == b"w":
+        Raindrop.y_inc -= 0.01
+        Raindrop.y_inc = max(0.05, Raindrop.y_inc)
+    if key == b"s":
+        Raindrop.y_inc += 0.01
+        Raindrop.y_inc = min(0.5, Raindrop.y_inc)
+    if key == b"a":
+        Raindrop.x_inc -= 0.01
+        Raindrop.x_inc = max(-0.05, Raindrop.x_inc)
+    if key == b"d":
+        Raindrop.x_inc += 0.01
+        Raindrop.x_inc = min(0.05, Raindrop.x_inc)
     
 def main():
     glutInit()
@@ -49,8 +93,10 @@ def main():
     glutCreateWindow(b"A rainy world")
     glutDisplayFunc(display)
     glutIdleFunc(animate)
+    glutKeyboardFunc(keybinds)
     glMatrixMode(GL_PROJECTION)
-    glOrtho(-200, 200, -400, 400, -1, 1)
+    glOrtho(-200, 200, -300, 300, -1, 1)
     glClearColor(*getColor("skyblue"), 1)
+    for i in range(50): Raindrop()
     glutMainLoop()
 if __name__ == '__main__': main()
