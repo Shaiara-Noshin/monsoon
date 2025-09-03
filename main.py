@@ -4,19 +4,33 @@ import random
 
 PALETTE = {
     "tin": (0.659, 0.635, 0.616),
+    "zukoscar": (0.651, 0.157, 0.133),
     "brown": (0.69, 0.533, 0.337),
     "skyblue": (0.725, 0.898, 0.91),
-    "gloomblue": (0.259, 0.447, 0.522)
+    "gloomblue": (0.259, 0.447, 0.522),
+    "grassgreen": (0.306, 0.529, 0.255),
+    "decay": (0.322, 0.298, 0.227)
 }
 
 def getColor(k):
     return PALETTE.get(k, (1, 1, 1))
 
+def drawLand():
+    glBegin(GL_QUADS)
+    glColor3f(*getColor("decay"))
+    glVertex2f(-200, -100)
+    glVertex2f(200, -100)
+    glVertex2f(200, -300)
+    glVertex2f(-200, -300)
+    glEnd()
+
 def drawHouse():
     rx, ry = 0, 0
-    rh, rw = 140, 260
-    bh, bw = 1.5*rh, 0.75*rw
+    rh, rw = 120, 280
+    bh, bw = 1.1*rh, 0.75*rw
     bx, by = rx, ry - (rh/2 + bh/2)
+    dh, dw = 0.65*bh, 0.35*bw
+    dx, dy = bx, by - (bh - dh)/2
     
     # Roof
     glBegin(GL_TRIANGLES)
@@ -33,7 +47,17 @@ def drawHouse():
     glVertex2f(bx - bw/2, by + bh/2)
     glVertex2f(bx - bw/2, by - bh/2)
     glVertex2f(bx + bw/2, by - bh/2)
+
+    # Door
+    glColor3f(*getColor("zukoscar"))
+    glVertex2f(dx + dw/2, dy + dh/2)
+    glVertex2f(dx - dw/2, dy + dh/2)
+    glVertex2f(dx - dw/2, dy - dh/2)
+    glVertex2f(dx + dw/2, dy - dh/2)
     glEnd()
+
+
+
 
 class Raindrop:
     x_inc = 0
@@ -63,6 +87,7 @@ class Raindrop:
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT)
+    drawLand()
     drawHouse()
     for drop in Raindrop.drops: drop.draw()
     glutSwapBuffers()
