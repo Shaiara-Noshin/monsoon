@@ -60,8 +60,8 @@ def drawHouse():
 
 
 class Raindrop:
-    x_inc = 0
-    y_inc = 0.1
+    x_inc = -0.05
+    y_inc = 0.3
     length = 20
     drops = []
 
